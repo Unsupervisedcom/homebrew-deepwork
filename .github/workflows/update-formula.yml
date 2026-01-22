@@ -1,0 +1,46 @@
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [update-formula]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update to (leave empty for latest)'
+        required: false
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          if [[ -n "${{ inputs.version }}" ]]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ -n "${{ github.event.client_payload.version }}" ]]; then
+            echo "version=${{ github.event.client_payload.version }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(curl -sL "https://pypi.org/pypi/deepwork/json" | jq -r '.info.version')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update formula
+        run: |
+          chmod +x scripts/update-formula.sh
+          ./scripts/update-formula.sh "${{ steps.version.outputs.version }}"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Update deepwork to ${{ steps.version.outputs.version }}"
+          title: "Update deepwork to ${{ steps.version.outputs.version }}"
+          body: |
+            Automated update of the deepwork formula to version ${{ steps.version.outputs.version }}.
+
+            PyPI: https://pypi.org/project/deepwork/${{ steps.version.outputs.version }}/
+          branch: update-deepwork-${{ steps.version.outputs.version }}
+          delete-branch: true

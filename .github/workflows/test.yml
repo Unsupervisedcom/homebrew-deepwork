@@ -1,0 +1,41 @@
+name: Test Formula
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test formula in Docker
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/tap" homebrew/brew:latest bash -c '
+            set -euo pipefail
+
+            # Add the local tap
+            brew tap-new --no-git local/deepwork
+            cp /tap/Formula/deepwork.rb "$(brew --repository)/Library/Taps/local/homebrew-deepwork/Formula/"
+
+            # Audit the formula
+            echo "==> Auditing formula..."
+            brew audit --strict local/deepwork/deepwork || true
+
+            # Install the formula
+            echo "==> Installing formula..."
+            brew install --verbose local/deepwork/deepwork
+
+            # Test the formula
+            echo "==> Testing formula..."
+            brew test local/deepwork/deepwork
+
+            # Verify the binary works
+            echo "==> Verifying binary..."
+            deepwork --help
+
+            echo "==> All tests passed!"
+          '
