@@ -8,6 +8,7 @@ class Deepwork < Formula
   license "BSL-1.1"
 
   depends_on "python@3.11"
+  depends_on "uv"
 
   def install
     # Create venv with pip included
@@ -18,7 +19,17 @@ class Deepwork < Formula
     (bin/"deepwork").write_env_script libexec/"bin/deepwork", PATH: "#{libexec}/bin:$PATH"
   end
 
+  def caveats
+    <<~EOS
+      DeepWork includes `uv` for managing Python environments.
+      AI agents can create project-specific virtual environments:
+        uv venv .venv
+        uv pip install <package>
+    EOS
+  end
+
   test do
     system bin/"deepwork", "--version"
+    system "uv", "--version"
   end
 end
