@@ -3,8 +3,8 @@ class Deepwork < Formula
 
   desc "Framework for enabling AI agents to perform complex, multi-step work tasks"
   homepage "https://github.com/Unsupervisedcom/deepwork"
-  url "https://files.pythonhosted.org/packages/b4/d9/3773f5122535a6eb2773624b21f5bc9af59c543f8751e5f1137cc96b05a2/deepwork-0.5.1.tar.gz"
-  sha256 "5f5e82a47ca56fed01caeb7d1fb3554582720009971c72c4e06aedef56e1a5bb"
+  url "https://files.pythonhosted.org/packages/2f/b8/ecc5e4a70080d27e6e9ae6d6aced0671f904e4d78fddea92d756d8f28c85/deepwork-0.7.0a2.tar.gz"
+  sha256 "863be82cc56d4e8c0193d7f838053aa63c42e35aa429727c9298264d1e8fb02d"
   license "BSL-1.1"
 
   depends_on "python@3.11"
